@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 
 # Save colors in constants to decorate the console output
@@ -12,10 +13,16 @@ END = '\033[0m'
 # Function log_write()
 # **********************************************************************************
 def log_write(log):
-    with open(log_file_path, "a") as log_file:
-        log_file.write(log)
-        # Comment next line to supress console output
-        print(log.strip('\n'))
+    log=log+"sync_log.txt"
+    try:
+        with open(log_file_path, "a") as log_file:
+            log_file.write(log)
+            # Comment next line to supress console output
+            print(log.strip('\n'))
+    except FileExistsError:
+        with open(log_file_path, "w+") as log_file:
+            log_file.write(f" ******* Log ******\n\n")
+            print(log.strip('\n'))
 
 
 # **********************************************************************************
@@ -141,14 +148,60 @@ def schedule(sch_interval):
 # main block
 # **********************************************************************************
 
-# src_path = sys.argv[1]
-# dst_path = sys.argv[2]
-# log_file_path = sys.argv[3]
 
-
+"""
 sch_interval = 5  # in seconds
 src_path = '/Users/alin/hyperiondev/sync/source'
 dst_path = '/Users/alin/hyperiondev/sync/target'
 log_file_path = '/Users/alin/hyperiondev/sync/log.txt'
+"""
 
-schedule(sch_interval)
+if __name__ == "__main__":
+    if len(sys.argv) != 5:
+        print("Usage: sync.py <source_folder> <target_folder> <log_folder> <sync_interval(hh:mm:ss)>")
+        sys.exit(1)
+
+    src_path = sys.argv[1]
+    dst_path = sys.argv[2]
+    log_file_path = sys.argv[3]
+    sch_interval = sys.argv[4]
+    error_argv=False
+
+    if not os.path.isdir(src_path) or not os.path.isdir(src_path) or not os.path.isdir(log_file_path):
+        log_write(f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} -{src_path} is not a folder: {END}\n")
+        error_argv=True
+
+    elif not os.access(src_path, os.R_OK):
+        log_write(f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} -Read permision is denied in {src_path} folder: {END}\n")
+        error_argv=True
+
+    elif not os.access(dst_path, os.W_OK):
+        log_write(f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} -Write permision is denied in {dst_path} folder: {END}\n")
+        error_argv=True
+
+    elif not os.access(log_file_path, os.W_OK):
+        log_write(f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} -Write permision is denied in {log_file_path} folder: {END}\n")
+        error_argv=True
+
+    try:
+        sch_interval=sch_interval.strip().lower().split(":")
+        hh, mm , ss =sch_interval[0], sch_interval[1], sch_interval[2]
+        if hh == '':
+            hh = 0
+        else: hh = int(hh)
+        if mm == '':
+            mm = 0
+        else: mm = int(mm)
+        if ss == '':
+            ss = 0
+        else: ss = int(ss)
+
+        sch_interval = hh*3600+mm*60+ss
+        if sch_interval==0:
+            sch_interval = 24*3600
+
+    except Exception as e:
+        pass
+
+
+    schedule(sch_interval)
