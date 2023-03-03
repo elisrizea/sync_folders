@@ -1,5 +1,5 @@
 
-# **Sync Folders V1 using only Python 3's built-in modules**
+# **Sync Folders using only Python 3's built-in modules**
     Sync two folders periodically using only Python 3's built-in modules. Command-line arguments provide folder paths, sync interval, and log file path.
     Compare folder contents using a recursive function, updating destination folder accordingly. Undo changes made directly to the destination folder.
     Record changes in log file.
