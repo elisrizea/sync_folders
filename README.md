@@ -18,7 +18,7 @@
     Python 3 Interpreter
 
 # **Running:**
-    Usage: sync.py <source_folder> <target_folder> <log_folder> <sync_interval(hh:mm:ss)>
+    sync.py <source_folder> <target_folder> <log_folder> <sync_interval(hh:mm:ss)>
 
 # **Credits:**
     Alin Rizea
