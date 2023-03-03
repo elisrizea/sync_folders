@@ -174,27 +174,27 @@ if __name__ == "__main__":
         error_argv = True
 
     elif not os.access(src_path, os.R_OK):
-        log_write(f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} -Read permission is denied in {src_path} folder: {END}\n")
+        log_write(f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} Read permission is denied in {src_path} folder: {END}\n")
         error_argv = True
 
     elif not os.access(dst_path, os.W_OK):
         log_write(
-            f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} -Write permission is denied in {dst_path} folder: {END}\n")
+            f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} Write permission is denied in {dst_path} folder: {END}\n")
         error_argv = True
 
     elif not os.access(log_file_path, os.W_OK):
         log_write(
-            f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} -Write permission is denied in {log_file_path} folder: {END}\n")
+            f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} Write permission is denied in {log_file_path} folder: {END}\n")
         error_argv = True
 
     elif not os.path.relpath(src_path, dst_path).startswith('..') or src_path == dst_path:
         log_write(
-            f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} -{dst_path} is a subfolder of  {src_path} folder: {END}\n")
+            f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} SOURCE is a subfolder of  MIRROR folder. {END}\n")
         error_argv = True
 
     elif not os.path.relpath(dst_path, src_path).startswith('..'):
         log_write(
-            f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} -{src_path} is a subfolder of  {src_path} folder: {END}\n")
+            f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} MIRROR is a subfolder of  SOURCE folder. {END}\n")
         error_argv = True
 
     # *****************************************************************************************************
@@ -204,27 +204,27 @@ if __name__ == "__main__":
     try:
 
         # Set CHMOD 733 to SOURCE folder and all files and subfolders. Modify next line for different setting
-        chm_source = 0o733
+        chm_source = '733'
         # Set CHMOD 733 to MIRROR folder and all files and subfolders. Modify next line for different setting
-        chm_mirror = 0o733
+        chm_mirror = '733'
 
-        # Set CHMOD 733 to SOURCE folder and all files and subfolders.
+        # Set CHMOD 733 to all SOURCE files and subfolders.
         for dirpath, dirnames, filenames in os.walk(src_path):
             for dirname in dirnames:
                 dir_full_path = os.path.join(dirpath, dirname)
-                os.chmod(dir_full_path, chm_source)
+                os.chmod(dir_full_path, int(chm_source,base=8))
             for filename in filenames:
                 file_full_path = os.path.join(dirpath, filename)
-                os.chmod(file_full_path, chm_source)
+                os.chmod(file_full_path, int(chm_source,base=8))
 
-        # Set CHMOD 733 to MIRROR folder and all files and subfolders.
+        # Set CHMOD 733 to all MIRROR  files and subfolders.
         for dirpath, dirnames, filenames in os.walk(src_path):
             for dirname in dirnames:
                 dir_full_path = os.path.join(dirpath, dirname)
-                os.chmod(dir_full_path, chm_mirror)
+                os.chmod(dir_full_path, int(chm_mirror,base=8))
             for filename in filenames:
                 file_full_path = os.path.join(dirpath, filename)
-                os.chmod(file_full_path, chm_mirror)
+                os.chmod(file_full_path, int(chm_mirror,base=8))
         log_write(f"{GREEN}{time.strftime('%Y-%m-%d %H:%M:%S')} Set CHMOD {chm_source} to SOURCE folder:{src_path} {END}\n")
         log_write(f"{GREEN}{time.strftime('%Y-%m-%d %H:%M:%S')} Set CHMOD {chm_source} to SOURCE folder:{src_path} {END}\n")
 
@@ -258,7 +258,12 @@ if __name__ == "__main__":
         sch_interval = hh * 3600 + mm * 60 + ss
         if sch_interval == 0:
             sch_interval = 24 * 3600
+
+        log_write(
+            f"{GREEN}{time.strftime('%Y-%m-%d %H:%M:%S')} Sync interval is set to: {sch_interval} seconds  {END}\n")
+
     except Exception as e:
+        sch_interval = 24 * 3600
         log_write(
             f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} Error sync interval Default 24H was enable: {END}\n")
 
