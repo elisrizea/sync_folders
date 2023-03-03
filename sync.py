@@ -197,6 +197,44 @@ if __name__ == "__main__":
             f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} -{src_path} is a subfolder of  {src_path} folder: {END}\n")
         error_argv = True
 
+    # *****************************************************************************************************
+    # Set CHMOD 733 to source and mirror file to avoid restricted access files or subfolders
+    # Comment all try if CHMOD is not desired
+    # *****************************************************************************************************
+    try:
+
+        # Set CHMOD 733 to SOURCE folder and all files and subfolders. Modify next line for different setting
+        chm_source = 0o733
+        # Set CHMOD 733 to MIRROR folder and all files and subfolders. Modify next line for different setting
+        chm_mirror = 0o733
+
+        # Set CHMOD 733 to SOURCE folder and all files and subfolders.
+        for dirpath, dirnames, filenames in os.walk(src_path):
+            for dirname in dirnames:
+                dir_full_path = os.path.join(dirpath, dirname)
+                os.chmod(dir_full_path, chm_source)
+            for filename in filenames:
+                file_full_path = os.path.join(dirpath, filename)
+                os.chmod(file_full_path, chm_source)
+
+        # Set CHMOD 733 to MIRROR folder and all files and subfolders.
+        for dirpath, dirnames, filenames in os.walk(src_path):
+            for dirname in dirnames:
+                dir_full_path = os.path.join(dirpath, dirname)
+                os.chmod(dir_full_path, chm_mirror)
+            for filename in filenames:
+                file_full_path = os.path.join(dirpath, filename)
+                os.chmod(file_full_path, chm_mirror)
+        log_write(f"{GREEN}{time.strftime('%Y-%m-%d %H:%M:%S')} Set CHMOD {chm_source} to SOURCE folder:{src_path} {END}\n")
+        log_write(f"{GREEN}{time.strftime('%Y-%m-%d %H:%M:%S')} Set CHMOD {chm_source} to SOURCE folder:{src_path} {END}\n")
+
+    except Exception as c:
+        log_write(f"{RED}{time.strftime('%Y-%m-%d %H:%M:%S')} WARNING:Set CHMOD ERROR {END}\n")
+        error_argv = True
+
+    # *****************************************************************************************************
+
+
     if error_argv:
         print("Usage: sync.py <source_folder> <target_folder> <log_folder> <sync_interval(hh:mm:ss)>")
         sys.exit(1)
